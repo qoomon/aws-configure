@@ -1,6 +1,6 @@
 # aws-session
 
-![PyPI](https://img.shields.io/pypi/v/aws-configure)
+[![PyPI](https://img.shields.io/pypi/v/aws-configure)](https://pypi.org/project/aws-configure/)
 
 A CLI to configure AWS named profiles in `~/.aws/config` and `~/.aws/credentials` files
 
