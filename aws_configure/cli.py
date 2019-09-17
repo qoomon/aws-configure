@@ -77,13 +77,14 @@ usage:
         aws-configure set [--profile/-p <profile_name>] [--clean/-c] <config_options...>
             
             --profile/-p <profile_name> : select profile to use else 'default'
-            <config_options>            : key=value pairs e.g. 'region=eu-central-1' 'source_profile=default'
-            --clean/-c                  : clear all profile options before setting new options (except credentials)
-            
+            --clean/-c       : clear all profile options before setting new options (except credentials)
+            <config_options> : key=value pairs e.g. 'region=eu-central-1' 'source_profile=default'
+
     delete profile:
 
-        aws-configure delete --profile/-p <profile_name> [--config] [--credentials]
+        aws-configure delete [--profile/-p <profile_name>] [--config] [--credentials]
         
+            --profile/-p <profile_name> : select profile to use else 'default'
             --config      : delete only profile config in '~/.aws/config'
             --credentials : delete only profile credentials in '~/.aws/credentials'
         
