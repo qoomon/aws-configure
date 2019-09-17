@@ -31,7 +31,8 @@ def profile_config_section(profile_name):
 
 def profile_update(config_path, profile_section, config, merge=False):
 
-    profile_delete(config_path, profile_section, clear=(not merge))
+    if not merge:
+        profile_delete(config_path, profile_section, clear=True)
 
     # add empty line as profile separator
     current_config = ConfigParser()
@@ -96,41 +97,35 @@ usage:
         
 """)
 
+def handle_help(args):    
+    print_help()
 
-def handle_list_profiles():
+def handle_list_profiles(args):
     profile_map = Session().full_config['profiles']
     for profile_name, profile in profile_map.items():
         print(profile_name)
 
 
-def handle_delete_profile():
-    sys.argv.pop(1)
-    profile_name = 'default'
-    if argv_get(1) in ('--profile', '-p'):
-        profile_name = argv_get(2)
-        sys.argv.pop(1)
-        sys.argv.pop(1)
-    # TODO add option to toggle
-    delete_config = True
-    delete_credentials = True
+def handle_delete_profile(args):
+    profile_name = args.profile_name or 'default'
+    delete_all= not args.delete_config and not args.delete_credentials
+    delete_config = delete_all or args.delete_config
+    delete_credentials = delete_all or args.delete_credentials
 
     if delete_config:
+        print("delete profile config")
         profile_delete(aws_config_path, profile_config_section(profile_name))
+        
     if delete_credentials:
+        print("delete profile credentials")
         profile_delete(aws_credentials_path, profile_name)
 
 
-def handle_set_profile():
-    sys.argv.pop(1)
-    profile_name = 'default'
-    if argv_get(1) in ('--profile', '-p'):
-        profile_name = argv_get(2)
-        sys.argv.pop(1)
-        sys.argv.pop(1)
-
+def handle_set_profile(args):
+    profile_name = args.profile_name or 'default'
     profile_config = {}
     profile_credentials = {}
-    for option in sys.argv[1:]:
+    for option in args.profile_options:
         option = split_key_value(option, '=')
         if option.key not in ['aws_access_key_id', 'aws_secret_access_key', 'aws_session_token']:
             profile_config[option.key] = option.value
@@ -138,10 +133,13 @@ def handle_set_profile():
             profile_credentials[option.key] = option.value
 
     if profile_config:
-        print("set profile config")
-        # TODO add option to toggle merge
+        merge_config=(not args.clean)
+        if merge_config:
+            print("merge profile config")
+        else:
+            print("set profile config")
         profile_update(aws_config_path, profile_config_section(profile_name),
-                       profile_config, merge=False)
+                       profile_config, merge_config)
 
     if profile_credentials:
         print("set profile credentials")
@@ -150,41 +148,32 @@ def handle_set_profile():
 
 
 def main():
-    if argv_get(1) == 'help':
-        print_help()
-    elif argv_get(1) == 'list':
-        handle_list_profiles()
-    elif argv_get(1) == 'delete':
-        handle_delete_profile()
-    elif argv_get(1) == 'set':
-        handle_set_profile()
-    else:
-        print_help()
-        exit(1)
+    parser = ArgumentParser(add_help=False)
+
+    parser_command = parser.add_subparsers(title='commands',dest='command',required=True)
+
+    parser_command_help = parser_command.add_parser('help', help="Print help")
+    parser_command_help.set_defaults(func=handle_help)
+
+    parser_command_list = parser_command.add_parser('list', help="List profiles")
+    parser_command_list.set_defaults(func=handle_list_profiles)
+
+    parser_command_set = parser_command.add_parser('set', help="Set profile")
+    parser_command_set.add_argument('-p', '--profile', dest='profile_name', help='Profile name')
+    parser_command_set.add_argument('--clean', action='store_true', dest='clean', help='Clear all profile options before setting new options')
+    parser_command_set.add_argument(dest='profile_options', nargs='+', help='Profile options')
+    parser_command_set.set_defaults(func=handle_set_profile)
+
+    parser_command_delete = parser_command.add_parser('delete', help='Delete profile')
+    parser_command_delete.add_argument('-p', '--profile', dest='profile_name', help='Profile name')
+    parser_command_delete.add_argument('--config', action='store_true', dest='delete_config', help='Delete only profile config')
+    parser_command_delete.add_argument('--credentials', action='store_true', dest='delete_credentials', help='Delete only profile credentials')
+    parser_command_delete.set_defaults(func=handle_delete_profile)
+
+    args = parser.parse_args()
+    args.func(args)
 
 
 if __name__ == "__main__":
     main()
 
-
-# parser = ArgumentParser()
-#
-# parser_command = parser.add_subparsers(title='commands',dest='command',required=True)
-#
-# parser_command_configure = parser_command.add_parser('configure', help="Configure profile")
-# parser_command_configure.add_argument('-p', '--profile', dest='profile', help='Profile name')
-# parser_command_configure.add_argument('--replace', action='store_true', dest='replace', help='Replace profile config and credentials')
-# parser_command_configure.add_argument('--replace-config', action='store_true', dest='preserve_config', help='Replace profile config')
-# parser_command_configure.add_argument('--replace-credentials', action='store_true', dest='preserve_credentials', help='Replace profile credentials')
-#
-# parser_command_configure.add_argument(dest='options', nargs='+', help='Profile options')
-# parser_command_configure.set_defaults(func=profile_configure)
-#
-# parser_command_delete = parser_command.add_parser('delete', help='Delete profile')
-# parser_command_delete.add_argument('-p', '--profile', dest='profile', help='Profile name')
-# parser_command_delete.add_argument('--preserve-config', action='store_true', dest='delete_config', help='Preserve profile config')
-# parser_command_delete.add_argument('--preserve-credentials', action='store_true', dest='delete_credentials', help='Preserve profile credentials')
-# parser_command_delete.set_defaults(func=profile_delete)
-#
-# args = parser.parse_args()
-# args.func(args)
