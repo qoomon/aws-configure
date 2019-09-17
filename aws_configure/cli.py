@@ -92,7 +92,7 @@ usage:
     
     print help
     
-        aws-session help
+        aws-configure help
         
 """)
 
