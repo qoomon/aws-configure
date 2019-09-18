@@ -8,9 +8,9 @@ A CLI to configure AWS named profiles in `~/.aws/config` and `~/.aws/credentials
 ```
 configure profile:
 
-    aws-configure set [--profile/-p <profile_name>] [--clean/-c] <config_options...>
+    aws-configure set [--profile/-p <profile_name>] [--clean/-c] [<config_options...>]
 
-        --profile/-p <profile_name> : select profile to use else 'default'
+        --profile/-p <profile_name> : select profile ['default']
         <config_options>            : key=value pairs e.g. 'region=eu-central-1' 'source_profile=default'
         --empty/-e                  : empty all profile options before setting new options
         --empty-config              : empty profile config options before setting
@@ -18,10 +18,11 @@ configure profile:
 
 delete profile:
 
-    aws-configure delete --profile/-p <profile_name> [--config] [--credentials]
+    aws-configure delete [--profile/-p <profile_name>] [--config] [--credentials]
 
-        --config      : delete only profile config in '~/.aws/config'
-        --credentials : delete only profile credentials in '~/.aws/credentials'
+        --profile/-p <profile_name> : select profile ['default']
+        --config                    : delete only profile config in '~/.aws/config'
+        --credentials               : delete only profile credentials in '~/.aws/credentials'
 
 list profiles:
 

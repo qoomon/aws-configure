@@ -74,19 +74,21 @@ usage:
 
     configure profile:
 
-        aws-configure set [--profile/-p <profile_name>] [--clean/-c] <config_options...>
+        aws-configure set [--profile/-p <profile_name>] [--clean/-c] [<config_options...>]
 
-            --profile/-p <profile_name> : select profile to use else 'default'
-            --clean/-c       : clear all profile options before setting new options (except credentials)
-            <config_options> : key=value pairs e.g. 'region=eu-central-1' 'source_profile=default'
+            --profile/-p <profile_name> : select profile ['default']
+            <config_options>            : key=value pairs e.g. 'region=eu-central-1' 'source_profile=default'
+            --empty/-e                  : empty all profile options before setting new options
+            --empty-config              : empty profile config options before setting
+            --empty-credentials         : empty profile credentials options before setting
 
     delete profile:
 
         aws-configure delete [--profile/-p <profile_name>] [--config] [--credentials]
 
-            --profile/-p <profile_name> : select profile to use else 'default'
-            --config      : delete only profile config in '~/.aws/config'
-            --credentials : delete only profile credentials in '~/.aws/credentials'
+            --profile/-p <profile_name> : select profile ['default']
+            --config                    : delete only profile config in '~/.aws/config'
+            --credentials               : delete only profile credentials in '~/.aws/credentials'
 
     list profiles:
 
@@ -95,7 +97,6 @@ usage:
     print help
 
         aws-configure help
-
 """)
 
 def handle_help(args):
