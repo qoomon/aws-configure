@@ -70,12 +70,12 @@ def profile_delete(config_path, profile_section, clear=False):
 
 def print_help():
     print("""\
-usage: 
+usage:
 
     configure profile:
 
         aws-configure set [--profile/-p <profile_name>] [--clean/-c] <config_options...>
-            
+
             --profile/-p <profile_name> : select profile to use else 'default'
             --clean/-c       : clear all profile options before setting new options (except credentials)
             <config_options> : key=value pairs e.g. 'region=eu-central-1' 'source_profile=default'
@@ -83,22 +83,22 @@ usage:
     delete profile:
 
         aws-configure delete [--profile/-p <profile_name>] [--config] [--credentials]
-        
+
             --profile/-p <profile_name> : select profile to use else 'default'
             --config      : delete only profile config in '~/.aws/config'
             --credentials : delete only profile credentials in '~/.aws/credentials'
-        
+
     list profiles:
 
         aws-configure list
-    
+
     print help
-    
+
         aws-configure help
-        
+
 """)
 
-def handle_help(args):    
+def handle_help(args):
     print_help()
 
 def handle_list_profiles(args):
@@ -116,7 +116,7 @@ def handle_delete_profile(args):
     if delete_config:
         print("delete profile config")
         profile_delete(aws_config_path, profile_config_section(profile_name))
-        
+
     if delete_credentials:
         print("delete profile credentials")
         profile_delete(aws_credentials_path, profile_name)
@@ -133,19 +133,23 @@ def handle_set_profile(args):
         else:
             profile_credentials[option.key] = option.value
 
+    if args.empty_config or args.empty_all:
+        print("empty profile config")
+        profile_update(aws_config_path, profile_config_section(profile_name),{})
+
     if profile_config:
-        merge_config=(not args.clean)
-        if merge_config:
-            print("merge profile config")
-        else:
-            print("set profile config")
+        print("set profile config")
         profile_update(aws_config_path, profile_config_section(profile_name),
-                       profile_config, merge_config)
+                       profile_config, merge=True)
+
+    if args.empty_credentials or args.empty_all:
+        print("empty profile credentials")
+        profile_update(aws_credentials_path, profile_name,{})
 
     if profile_credentials:
         print("set profile credentials")
         profile_update(aws_credentials_path, profile_name,
-                       profile_credentials, merge=False)
+                       profile_credentials, merge=True)
 
 
 def main():
@@ -161,7 +165,9 @@ def main():
 
     parser_command_set = parser_command.add_parser('set', help="Set profile")
     parser_command_set.add_argument('-p', '--profile', dest='profile_name', help='Profile name')
-    parser_command_set.add_argument('--clean', action='store_true', dest='clean', help='Clear all profile options before setting new options')
+    parser_command_set.add_argument('-e', '--empty', action='store_true', dest='empty_all', help='Empty all profile options before setting new options')
+    parser_command_set.add_argument('--empty-config', action='store_true', dest='empty_config', help='Empty profile config options before setting new options')
+    parser_command_set.add_argument('--empty-credentials', action='store_true', dest='empty_credentials', help='Empty profile credentials options before setting new options')
     parser_command_set.add_argument(dest='profile_options', nargs='+', help='Profile options')
     parser_command_set.set_defaults(func=handle_set_profile)
 
@@ -177,4 +183,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

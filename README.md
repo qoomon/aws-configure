@@ -5,22 +5,24 @@
 A CLI to configure AWS named profiles in `~/.aws/config` and `~/.aws/credentials files`
 
 ## Usage
-``` 
+```
 configure profile:
 
     aws-configure set [--profile/-p <profile_name>] [--clean/-c] <config_options...>
-        
+
         --profile/-p <profile_name> : select profile to use else 'default'
         <config_options>            : key=value pairs e.g. 'region=eu-central-1' 'source_profile=default'
-        --clean/-c                  : clear all profile options before setting new options (except credentials)
-        
+        --empty/-e                  : empty all profile options before setting new options
+        --empty-config              : empty profile config options before setting
+        --empty-credentials         : empty profile credentials options before setting
+
 delete profile:
 
     aws-configure delete --profile/-p <profile_name> [--config] [--credentials]
-    
+
         --config      : delete only profile config in '~/.aws/config'
         --credentials : delete only profile credentials in '~/.aws/credentials'
-    
+
 list profiles:
 
     aws-configure list
@@ -28,7 +30,7 @@ list profiles:
 print help
 
     aws-configure help
-``` 
+```
 
 ## Setup dev environment
 
