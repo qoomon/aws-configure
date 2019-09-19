@@ -52,19 +52,19 @@ def profile_delete(config_path, profile_section, clear=False):
         config_string = config_file.read()
 
     with open(config_path, 'w') as config_file:
-        write = True
+        output = True
         for config_line in StringIO(config_string):
             section_match = ConfigFileWriter.SECTION_REGEX.search(config_line)
-            if section_match is not None:
+            if section_match:
                 if section_match.group('header') == profile_section:
                     if clear:
                         config_file.write(config_line)
-                    write = False
+                    output = False
                 else:
-                    if clear and not write:
+                    if clear and not output:
                         config_file.write('\n')
-                    write = True
-            if write:
+                    output = True
+            if output:
                 config_file.write(config_line)
 
 
@@ -72,7 +72,12 @@ def print_help():
     print("""\
 usage:
 
-    configure profile:
+    list profiles:
+
+        aws-configure list
+        
+
+    set profile options:
 
         aws-configure set [--profile/-p <profile_name>] [--clean/-c] [<config_options...>]
 
@@ -82,6 +87,13 @@ usage:
             --empty-config              : empty profile config options before setting
             --empty-credentials         : empty profile credentials options before setting
 
+    get profile options:
+
+        aws-configure get [--profile/-p <profile_name>] [<config_options...>]
+
+            --profile/-p <profile_name> : select profile ['default']
+            <config_options>            : option key e.g. 'region' 'source_profile'
+
     delete profile:
 
         aws-configure delete [--profile/-p <profile_name>] [--config] [--credentials]
@@ -89,10 +101,6 @@ usage:
             --profile/-p <profile_name> : select profile ['default']
             --config                    : delete only profile config in '~/.aws/config'
             --credentials               : delete only profile credentials in '~/.aws/credentials'
-
-    list profiles:
-
-        aws-configure list
 
     print help
 
@@ -153,30 +161,48 @@ def handle_set_profile(args):
                        profile_credentials, merge=True)
 
 
+def handle_get_profile(args):
+    profile_name = args.profile_name or 'default'
+    aws_config_section=profile_config_section(profile_name)
+    aws_config = ConfigParser()
+    aws_config.read(aws_config_path)
+    if args.profile_options:
+        for option in args.profile_options:
+            print(aws_config.get(aws_config_section, option))
+    else:
+        for option in aws_config.options(aws_config_section):
+            print(f'{option} = {aws_config.get(aws_config_section, option)}')
+            
+            
 def main():
     parser = ArgumentParser(add_help=False)
 
     parser_command = parser.add_subparsers(title='commands',dest='command',required=True)
 
-    parser_command_help = parser_command.add_parser('help', help="Print help")
-    parser_command_help.set_defaults(func=handle_help)
-
     parser_command_list = parser_command.add_parser('list', help="List profiles")
     parser_command_list.set_defaults(func=handle_list_profiles)
 
-    parser_command_set = parser_command.add_parser('set', help="Set profile")
+    parser_command_set = parser_command.add_parser('set', help="Set profile options")
     parser_command_set.add_argument('-p', '--profile', dest='profile_name', help='Profile name')
     parser_command_set.add_argument('-e', '--empty', action='store_true', dest='empty_all', help='Empty all profile options before setting new options')
     parser_command_set.add_argument('--empty-config', action='store_true', dest='empty_config', help='Empty profile config options before setting new options')
     parser_command_set.add_argument('--empty-credentials', action='store_true', dest='empty_credentials', help='Empty profile credentials options before setting new options')
-    parser_command_set.add_argument(dest='profile_options', nargs='+', help='Profile options')
+    parser_command_set.add_argument(dest='profile_options', nargs='*', help='Profile options')
     parser_command_set.set_defaults(func=handle_set_profile)
+    
+    parser_command_get = parser_command.add_parser('get', help="Get profile options")
+    parser_command_get.add_argument('-p', '--profile', dest='profile_name', help='Profile name')
+    parser_command_get.add_argument(dest='profile_options', nargs='*', help='Profile options')
+    parser_command_get.set_defaults(func=handle_get_profile)
 
     parser_command_delete = parser_command.add_parser('delete', help='Delete profile')
     parser_command_delete.add_argument('-p', '--profile', dest='profile_name', help='Profile name')
     parser_command_delete.add_argument('--config', action='store_true', dest='delete_config', help='Delete only profile config')
     parser_command_delete.add_argument('--credentials', action='store_true', dest='delete_credentials', help='Delete only profile credentials')
     parser_command_delete.set_defaults(func=handle_delete_profile)
+    
+    parser_command_help = parser_command.add_parser('help', help="Print help")
+    parser_command_help.set_defaults(func=handle_help)
 
     args = parser.parse_args()
     args.func(args)
