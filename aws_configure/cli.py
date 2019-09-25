@@ -143,20 +143,20 @@ def handle_set_profile(args):
             profile_credentials[option.key] = option.value
 
     if args.empty_config or args.empty_all:
-        print("empty profile config")
+        print(f'empty \'{profile_name}\'profile config options')
         profile_update(aws_config_path, profile_config_section(profile_name),{})
 
     if profile_config:
-        print("set profile config")
+        print(f'set \'{profile_name}\'profile config options')
         profile_update(aws_config_path, profile_config_section(profile_name),
                        profile_config, merge=True)
 
     if args.empty_credentials or args.empty_all:
-        print("empty profile credentials")
+        print(f'empty \'{profile_name}\'profile credentials')
         profile_update(aws_credentials_path, profile_name,{})
 
     if profile_credentials:
-        print("set profile credentials")
+        print(f'set \'{profile_name}\'profile credentials')
         profile_update(aws_credentials_path, profile_name,
                        profile_credentials, merge=True)
 
