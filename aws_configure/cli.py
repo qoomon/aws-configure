@@ -177,7 +177,7 @@ def handle_get_profile(args):
 def main():
     parser = ArgumentParser(add_help=False)
 
-    parser_command = parser.add_subparsers(title='commands',dest='command',required=True)
+    parser_command = parser.add_subparsers(title='commands',dest='command')
 
     parser_command_list = parser_command.add_parser('list', help="List profiles")
     parser_command_list.set_defaults(func=handle_list_profiles)
@@ -205,8 +205,11 @@ def main():
     parser_command_help.set_defaults(func=handle_help)
 
     args = parser.parse_args()
-    args.func(args)
-
+    if args.command:
+        args.func(args)
+        
+    print_help()
+    exit(1)
 
 if __name__ == "__main__":
     main()

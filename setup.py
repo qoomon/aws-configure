@@ -10,7 +10,7 @@ def read_text(file_name):
 
 setuptools.setup(
     name='aws-configure',
-    version='2.1.3',
+    version='2.1.4',
     author="Bengt Brodersen",
     author_email="me@qoomon.me",
     description="A CLI to configure AWS named profiles in ~/.aws/config and ~/.aws/credentials files",
@@ -22,6 +22,8 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
         "Environment :: Console",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
