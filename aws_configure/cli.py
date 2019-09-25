@@ -205,11 +205,11 @@ def main():
     parser_command_help.set_defaults(func=handle_help)
 
     args = parser.parse_args()
-    if args.command:
-        args.func(args)
+    if not args.command:
+        print_help()
+        exit(1)
         
-    print_help()
-    exit(1)
+    args.func(args)
 
 if __name__ == "__main__":
     main()

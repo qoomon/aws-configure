@@ -10,7 +10,7 @@ def read_text(file_name):
 
 setuptools.setup(
     name='aws-configure',
-    version='2.1.4',
+    version='2.1.5',
     author="Bengt Brodersen",
     author_email="me@qoomon.me",
     description="A CLI to configure AWS named profiles in ~/.aws/config and ~/.aws/credentials files",
