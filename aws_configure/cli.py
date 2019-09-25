@@ -171,7 +171,7 @@ def handle_get_profile(args):
             print(aws_config.get(aws_config_section, option))
     else:
         for option in aws_config.options(aws_config_section):
-            print(f'{option} = {aws_config.get(aws_config_section, option)}')
+            print(option + " = " + aws_config.get(aws_config_section, option))
             
             
 def main():
