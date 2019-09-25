@@ -178,6 +178,7 @@ def main():
     parser = ArgumentParser(add_help=False)
 
     parser_command = parser.add_subparsers(title='commands',dest='command')
+    parser_command.required = True
 
     parser_command_list = parser_command.add_parser('list', help="List profiles")
     parser_command_list.set_defaults(func=handle_list_profiles)
@@ -204,11 +205,7 @@ def main():
     parser_command_help = parser_command.add_parser('help', help="Print help")
     parser_command_help.set_defaults(func=handle_help)
 
-    args = parser.parse_args()
-    if not args.command:
-        print_help()
-        exit(1)
-        
+    args = parser.parse_args()        
     args.func(args)
 
 if __name__ == "__main__":
