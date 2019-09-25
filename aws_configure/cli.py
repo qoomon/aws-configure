@@ -34,20 +34,24 @@ def profile_update(config_path, profile_section, config, merge=False):
     if not merge:
         profile_delete(config_path, profile_section, clear=True)
 
-    # add empty line as profile separator
-    current_config = ConfigParser()
-    current_config.read(config_path)
-    if current_config.sections() and profile_section not in current_config.sections():
-        with open(config_path, 'a') as config_file:
-            config_file.write('\n')
+    if config:
+        # add empty line as profile separator
+        current_config = ConfigParser()
+        current_config.read(config_path)
+        if current_config.sections() and profile_section not in current_config.sections():
+            with open(config_path, 'a') as config_file:
+                config_file.write('\n')
 
-    ConfigFileWriter().update_config({
-        **config,
-        '__section__': profile_section
-    }, config_path)
+        ConfigFileWriter().update_config({
+            **config,
+            '__section__': profile_section
+        }, config_path)
 
 
 def profile_delete(config_path, profile_section, clear=False):
+    if not path.exists(config_path):
+        return
+    
     with open(config_path) as config_file:
         config_string = config_file.read()
 
