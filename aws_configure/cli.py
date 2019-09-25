@@ -79,7 +79,7 @@ usage:
 
     set profile options:
 
-        aws-configure set [--profile/-p <profile_name>] [--clean/-c] [<config_options...>]
+        aws-configure set [--profile/-p <profile_name>] [--empty/-e] [<config_options...>]
 
             --profile/-p <profile_name> : select profile ['default']
             <config_options>            : key=value pairs e.g. 'region=eu-central-1' 'source_profile=default'
