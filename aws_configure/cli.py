@@ -1,4 +1,4 @@
-from os import (path, environ)
+from os import (path)
 import sys
 from io import StringIO
 from collections import namedtuple
