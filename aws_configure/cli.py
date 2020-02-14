@@ -6,15 +6,13 @@ from argparse import ArgumentParser
 from configparser import ConfigParser
 
 from botocore.session import Session
-from awscli.customizations.configure.writer import ConfigFileWriter
+from .configfilewriter import ConfigFileWriter
 
 aws_config_path = path.expanduser(
     Session().get_config_variable('config_file'))
+    
 aws_credentials_path = path.expanduser(
     Session().get_config_variable('credentials_file'))
-
-def argv_get(index):
-    return sys.argv[index] if index < len(sys.argv) else None
 
 
 def split_key_value(key_value, separator):
@@ -72,7 +70,7 @@ def profile_delete(config_path, profile_section, clear=False):
                 config_file.write(config_line)
 
 
-def print_help():
+def handle_help(args):
     print("""\
 usage:
 
@@ -111,8 +109,6 @@ usage:
         aws-configure help
 """)
 
-def handle_help(args):
-    print_help()
 
 def handle_list_profiles(args):
     profile_map = Session().full_config['profiles']
