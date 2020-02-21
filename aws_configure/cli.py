@@ -166,12 +166,15 @@ def handle_get_profile(args):
     aws_config_section=profile_config_section(profile_name)
     aws_config = ConfigParser()
     aws_config.read(aws_config_path)
+    aws_config.read(aws_credentials_path)
     if args.profile_options:
         for option in args.profile_options:
-            print(aws_config.get(aws_config_section, option))
+            print(aws_config.get(aws_config_section, option, fallback=''))
     else:
         for option in aws_config.options(aws_config_section):
             print(option + " = " + aws_config.get(aws_config_section, option))
+        for option in aws_config.options(profile_name):
+            print(option + " = " + aws_config.get(profile_name, option))
             
             
 def main():
