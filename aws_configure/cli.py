@@ -166,15 +166,24 @@ def handle_get_profile(args):
     aws_config_section=profile_config_section(profile_name)
     aws_config = ConfigParser()
     aws_config.read(aws_config_path)
-    aws_config.read(aws_credentials_path)
+    aws_credentials = ConfigParser()
+    aws_credentials.read(aws_credentials_path)
     if args.profile_options:
-        for option in args.profile_options:
-            print(aws_config.get(aws_config_section, option, fallback=''))
+        for option in args.profile_options:                
+            value = aws_config.get(aws_config_section, option, fallback='')
+            if not value:
+                value = aws_credentials.get(profile_name, option, fallback='')
+            print(value)
     else:
-        for option in aws_config.options(aws_config_section):
-            print(option + " = " + aws_config.get(aws_config_section, option))
-        for option in aws_config.options(profile_name):
-            print(option + " = " + aws_config.get(profile_name, option))
+        if not aws_config.has_section(aws_config_section) and not aws_credentials.has_section(profile_name):
+            raise Exception(f"The config profile ({profile_name}) could not be found")
+        
+        if aws_config.has_section(aws_config_section):
+            for option in aws_config.options(aws_config_section):
+                print(option + " = " + aws_config.get(aws_config_section, option))
+        if aws_credentials.has_section(profile_name):        
+            for option in aws_credentials.options(profile_name):
+                print(option + " = " + aws_credentials.get(profile_name, option))
             
             
 def main():

@@ -41,6 +41,27 @@ list profiles:
       aws-configure help
 ```
 
+### Bash Helper Scripts
+#### Export Credentials To Current Bash Session
+```
+function aws-export-credentials {
+  local profile="$1"
+  { 
+    read AWS_ACCESS_KEY_ID 
+    read AWS_SECRET_ACCESS_KEY 
+    read AWS_SESSION_TOKEN
+  } <<< $(
+    aws-configure get -p "$profile" \
+      aws_access_key_id \
+      aws_secret_access_key \
+      aws_session_token
+    )
+  export AWS_ACCESS_KEY_ID 
+  export AWS_SECRET_ACCESS_KEY 
+  export AWS_SESSION_TOKEN
+}
+```
+
 ## Setup dev environment
 
 #### Install Dev Dependencies
